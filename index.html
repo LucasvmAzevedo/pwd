@@ -3,6 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Portfólio - Desenvolvedor</title>
+    <!-- Carrega o Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configurações Globais e Tema Escuro/Hacker */
+        :root {
+            /* Tema Padrão (Escuro) */
+            --bg-main: #1A1A1A;
+            --text-main: #F0F0F0;
+            --accent-orange: #FF8C00;
+            --terminal-green: #00FF00;
+            --card-bg: #282828;
+            --border-color: #383838;
+            --text-secondary: #D1D5DB; /* gray-300 */
+        }
+
+        /* Tema Claro (Light Theme) */
+        body.light-theme {
+            --bg-main: #E8E5DF; /* Bege/Cinza claro inspirado na referência */
+            --text-main: #1A1A1A;
+            --card-bg: #FFFFFF;
+            --border-color: #D3D3D3;
+            --text-secondary: #4B5563; /* gray-600 */
+        }
+
+        body {
+            /* Melhoria de Tipografia: Font stack mais robusta para Inter */
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.5s, color 0.5s;
+            /* Melhoria de Tipografia: Aumenta o espaçamento para melhor legibilidade */
+            line-height: 1.6;
+        }
+
+        /* Melhoria de Tipografia: Ajuste na altura da linha para títulos */
+        h1, h2, h3 {
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        /* Estilo para a barra lateral "código" */
+        .sidebar-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 0.75rem; /* text-xs */
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Classe para esconder/mostrar as abas com animação */
+        .content-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .content-section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ==================================== */
+        /* ANIMAÇÕES DOS BOTÕES E LINKS */
+        /* ==================================== */
+
+        /* Animação para Links de Navegação */
+        .nav-link {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        /* Efeito Hover: Leve subida e mudança de cor */
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: var(--accent-orange) !important;
+        }
+
+        /* Estilo dos links de navegação ativos */
+        .nav-link.active {
+            color: var(--accent-orange) !important;
+            border-bottom: 2px solid var(--accent-orange);
+            font-weight: 700;
+        }
+
+        /* Animação para Botões de Ação (CTA) */
+        .cta-button {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .cta-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ==================================== */
+        /* ESTILOS DO TERMINAL (Responsivo) */
+        /* ==================================== */
+        #terminal-output {
+            background-color: #0d0d0d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Base height for larger screens */
+            height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            white-space: pre-wrap;
+            /* Melhoria de Tipografia: Font stack mais moderna para Monospace */
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.875rem;
+            color: var(--terminal-green);
+            line-height: 1.5;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        /* Ajuste de altura para telas menores (mobile) */
+        @media (max-width: 639px) { /* Corresponde ao breakpoint 'sm' do Tailwind */
+            #terminal-output {
+                height: 300px;
+            }
+        }
+
+        #terminal-input {
+            background-color: #0d0d0d;
+            color: var(--terminal-green);
+            border: none;
+            outline: none;
+            width: 100%;
+            /* Melhoria de Tipografia: Aplica a mesma font stack de Monospace */
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            padding-left: 0.5rem;
+        }
+
+        /* Efeito de digitação (cursor piscando) */
+        .cursor::after {
+            content: '_';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Detalhe da Barra Lateral Direita (Inspirado na Referência) -->
+        <div class="fixed right-0 top-0 h-full hidden lg:flex items-center justify-center p-4">
+            <span class="sidebar-text">PORTFÓLIO &lt;CÓDIGO_ABERTO&gt; - FULL-STACK DEVELOPER</span>
+        </div>
+
+        <!-- Conteúdo Principal e Container -->
+        <div class="max-w-7xl mx-auto w-full flex-grow p-4 sm:p-8 lg:p-12">
+
+            <!-- Header e Navegação -->
+            <header class="flex flex-col sm:flex-row justify-between items-center border-b pb-4 mb-8"
+                    style="border-color: var(--border-color);">
+                <div class="text-2xl font-bold mb-4 sm:mb-0" style="color: var(--text-main);">
+                    &lt;DEV_CÓDIGO /&gt;
+                </div>
+                <div class="flex items-center space-x-6">
+                    <!-- Navegação Adaptativa -->
+                    <nav id="main-nav" class="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-8 text-sm font-semibold" style="color: var(--text-main);">
+                        <button data-section="home" class="nav-link active py-1 transition duration-300">HOME</button>
+                        <button data-section="about" class="nav-link py-1 transition duration-300">ABOUT</button>
+                        <button data-section="portfolio" class="nav-link py-1 transition duration-300">PORTFOLIO</button>
+                        <a href="https://github.com/seu-usuario" target="_blank" class="nav-link py-1 transition duration-300">GITHUB</a>
+                        <button data-section="terminal" class="nav-link py-1 transition duration-300">TERMINAL</button>
+                    </nav>
+
+                    <!-- Botão de Tema (Sol/Lua) -->
+                    <button id="theme-toggle" onclick="toggleTheme()"
+                            class="p-2 rounded-full cta-button"
+                            style="background-color: var(--card-bg); color: var(--text-main);">
+                        <!-- SVG da Lua (Padrão: Tema Escuro ativo) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CONTEÚDO DAS SEÇÕES -->
+            <main class="py-8">
+
+                <!-- 1. HOME -->
+                <section id="home" class="content-section active">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+                        <div class="lg:col-span-2">
+                            <p class="text-xl mb-4 font-mono" style="color: var(--text-secondary);">WELCOME // HOME</p>
+                            <!-- Escala de título ajustada para mobile -->
+                            <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-none mb-6" style="color: var(--accent-orange);">
+                                Coding <br> A Better_ <br> World_
+                            </h1>
+                            <p class="text-lg max-w-xl" style="color: var(--text-secondary);">
+                                Olá! Eu sou um Desenvolvedor Full-Stack apaixonado por transformar ideias complexas em soluções digitais elegantes e performáticas.
+                            </p>
+                            <div class="mt-8 flex space-x-4">
+                                <!-- Botão 1: Primário -->
+                                <button onclick="changeSection('portfolio')"
+                                        class="px-6 py-3 bg-white text-gray-900 rounded-lg font-bold shadow-md cta-button">
+                                    Ver Projetos
+                                </button>
+                                <!-- Botão 2: Secundário -->
+                                <button onclick="changeSection('about')"
+                                        class="px-6 py-3 border rounded-lg font-bold cta-button"
+                                        style="border-color: var(--text-main); color: var(--text-main); background-color: transparent;">
+                                    Minha História
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Coluna Lateral (Mockup de Código) - Continua oculta no mobile -->
+                        <div class="hidden lg:block lg:col-span-1 p-6 rounded-lg shadow-lg font-mono text-sm"
+                             style="background-color: var(--card-bg); color: var(--text-secondary);">
+                            <p class="text-yellow-500">const developer = &#123;</p>
+                            <p class="ml-4">name: <span class="text-green-400">'[Seu Nome]'</span>,</p>
+                            <p class="ml-4">role: <span class="text-green-400">'FullStack'</span>,</p>
+                            <p class="ml-4">experience: <span class="text-blue-400">5</span>,</p>
+                            <p class="ml-4">expertise: [</p>
+                            <p class="ml-8 text-red-400">'React', 'Node.js', 'Tailwind'</p>
+                            <p class="ml-4">],</p>
+                            <p class="text-yellow-500">&#125;;</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. ABOUT -->
+                <section id="about" class="content-section">
+                    <h2 class="text-4xl font-bold mb-6" style="color: var(--accent-orange);">Sobre Mim // &lt;WHO_AM_I&gt;</h2>
+                    <div class="max-w-3xl space-y-4 text-lg" style="color: var(--text-secondary);">
+                        <p>
+                            Minha jornada começou há 5 anos, quando escrevi meu primeiro "Hello World". Desde então, nunca mais parei de buscar conhecimento e as melhores práticas em desenvolvimento de software. Acredito que a tecnologia tem o poder de resolver problemas do mundo real, e é isso que me motiva.
+                        </p>
+                        <p>
+                            Sou especialista em arquiteturas modernas, com foco em performance e experiência do usuário. Trabalho com a stack **MERN/T3** (MongoDB, Express, React, Node/TypeScript, Tailwind, tRPC), mas estou sempre aberto a novas ferramentas.
+                        </p>
+                        <p>
+                            Nos meus momentos de folga, gosto de praticar escalada e explorar novas linguagens de programação (atualmente estudando Rust!).
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 3. PORTFOLIO -->
+                <section id="portfolio" class="content-section">
+                    <h2 class="text-4xl font-bold mb-8" style="color: var(--accent-orange);">Portfólio // &lt;PROJECTS&gt;</h2>
+                    <!-- O grid é automaticamente responsivo (1 coluna em mobile, 2 em md, 3 em lg) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                        <!-- Projeto 1 -->
+                        <div class="p-6 rounded-lg shadow-xl cta-button"
+                             style="background-color: var(--card-bg); border: 1px solid var(--border-color);">
+                            <h3 class="text-2xl font-semibold mb-2" style="color: var(--text-main);">Project X (E-commerce Moderno)</h3>
+                            <p class="text-sm font-mono mb-4" style="color: var(--text-secondary);">Stack: React, Node.js, Stripe</p>
+                            <p style="color: var(--text-secondary);">
+                                Desenvolvimento completo de uma plataforma de e-commerce escalável. Foco em SEO e performance de carregamento.
+                            </p>
+                            <a href="#" target="_blank" class="mt-4 inline-block text-sm font-bold" style="color: var(--accent-orange);">Ver Demo &rarr;</a>
+                        </div>
+
+                        <!-- Projeto 2 -->
+                        <div class="p-6 rounded-lg shadow-xl cta-button"
+                             style="background-color: var(--card-bg); border: 1px solid var(--border-color);">
+                            <h3 class="text-2xl font-semibold mb-2" style="color: var(--text-main);">IA Financial Bot (SaaS)</h3>
+                            <p class="text-sm font-mono mb-4" style="color: var(--text-secondary);">Stack: Python, Gemini API, Next.js</p>
+                            <p style="color: var(--text-secondary);">
+                                Um assistente financeiro baseado em IA que gera relatórios de mercado em tempo real.
+                            </p>
+                            <a href="#" target="_blank" class="mt-4 inline-block text-sm font-bold" style="color: var(--accent-orange);">Ver Demo &rarr;</a>
+                        </div>
+
+                        <!-- Projeto 3 -->
+                        <div class="p-6 rounded-lg shadow-xl cta-button"
+                             style="background-color: var(--card-bg); border: 1px solid var(--border-color);">
+                            <h3 class="text-2xl font-semibold mb-2" style="color: var(--text-main);">Design System Library</h3>
+                            <p class="text-sm font-mono mb-4" style="color: var(--text-secondary);">Stack: TypeScript, Storybook, Tailwind</p>
+                            <p style="color: var(--text-secondary);">
+                                Criação de uma biblioteca de componentes reutilizáveis para garantir consistência e agilidade no desenvolvimento.
+                            </p>
+                            <a href="#" target="_blank" class="mt-4 inline-block text-sm font-bold" style="color: var(--accent-orange);">Ver Demo &rarr;</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. TERMINAL (Funcionalidade principal) -->
+                <section id="terminal" class="content-section">
+                    <h2 class="text-4xl font-bold mb-6" style="color: var(--accent-orange);">Terminal // &lt;INTERACT&gt;</h2>
+                    <p class="mb-4" style="color: var(--text-secondary);">Simulação de console interativo. Digite 'help' para começar.</p>
+
+                    <div id="terminal-output">
+                        Bem-vindo ao [Seu Nome]'s Console v1.0.0
+                        Digite 'help' para ver os comandos disponíveis.
+                        ------------------------------------------------------
+                    </div>
+
+                    <div class="flex items-center p-2 rounded-lg mt-2" style="background-color: #0d0d0d;">
+                        <span style="color: var(--terminal-green);">$</span>
+                        <input type="text" id="terminal-input" placeholder="Comando..." autocomplete="off" autofocus class="cursor" onkeydown="handleInput(event)">
+                    </div>
+
+                </section>
+
+            </main>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="text-center text-sm py-4 mt-auto" style="border-top: 1px solid var(--border-color); color: var(--text-secondary);">
+            &copy; 2025 [Seu Nome]. Feito com &lt;/&gt; e um toque de código.
+        </footer>
+    </div>
+
+    <!-- JavaScript para a Interatividade -->
+    <script>
+        // Variáveis de Configuração
+        const accentColor = 'var(--accent-orange)';
+        const terminalGreen = 'var(--terminal-green)';
+
+        // =================================================================
+        // LÓGICA DE NAVEGAÇÃO
+        // =================================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Adiciona listeners para os botões de navegação
+            document.querySelectorAll('.nav-link').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const sectionId = e.target.dataset.section;
+                    if (sectionId) {
+                        changeSection(sectionId);
+                    }
+                });
+            });
+
+            // Inicializa a seção Home
+            changeSection('home');
+            // Carrega o tema salvo, ou usa o dark como padrão
+            loadTheme();
+        });
+
+        function changeSection(targetId) {
+            // 1. Esconde todas as seções e remove a classe 'active'
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 2. Remove o estado 'active' de todos os links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // 3. Mostra a seção alvo e adiciona a classe 'active'
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // 4. Adiciona o estado 'active' ao link de navegação correspondente
+            const targetLink = document.querySelector(`.nav-link[data-section="${targetId}"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+            }
+
+            // Foca no input do terminal se a seção for 'terminal'
+            if (targetId === 'terminal') {
+                document.getElementById('terminal-input').focus();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+
+        // =================================================================
+        // LÓGICA DO TEMA (DARK/LIGHT)
+        // =================================================================
+
+        function toggleTheme() {
+            const body = document.body;
+            const isLightTheme = body.classList.toggle('light-theme');
+            const themeToggle = document.getElementById('theme-toggle');
+
+            // Salva a preferência
+            // Usando console.log para emular salvamento da preferência em um ambiente real
+            console.log("Tema alternado para:", isLightTheme ? 'light' : 'dark');
+
+            // Atualiza o ícone
+            if (isLightTheme) {
+                // Sol
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+            } else {
+                // Lua
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            }
+        }
+
+        function loadTheme() {
+             // Em um ambiente real, você buscaria a preferência do usuário (localStorage ou banco de dados)
+             // Aqui, o tema dark é o padrão.
+             // Se o usuário já tiver alternado (e salvado, se implementado), aplique aqui.
+             // No momento, deixamos como dark por padrão, mas a função de toggleTheme está pronta.
+        }
+
+        // =================================================================
+        // LÓGICA DO TERMINAL
+        // =================================================================
+
+        const terminalOutput = document.getElementById('terminal-output');
+        const terminalInput = document.getElementById('terminal-input');
+        const history = [];
+        let historyIndex = -1;
+
+        // Comandos disponíveis no terminal
+        const commands = {
+            'help': {
+                description: 'Lista todos os comandos disponíveis.',
+                execute: () => {
+                    let output = '\nComandos disponíveis:\n';
+                    for (const cmd in commands) {
+                        output += `<span style="color: ${accentColor};">${cmd.padEnd(15)}</span> - ${commands[cmd].description}\n`;
+                    }
+                    return output;
+                }
+            },
+            'about': {
+                description: 'Exibe informações detalhadas "Sobre Mim".',
+                execute: () => {
+                    // O conteúdo real deve ser buscado da seção 'about'
+                    const aboutText = document.getElementById('about').querySelector('div.space-y-4').innerText;
+                    return `\n-- ABOUT ME --\n${aboutText}\n\n[Dica: Você pode ir para a seção 'ABOUT' no menu.]`;
+                }
+            },
+            'portfolio': {
+                description: 'Muda para a seção Portfólio.',
+                execute: () => {
+                    changeSection('portfolio');
+                    return '\n>> Mudando para a seção PORTFOLIO...\n';
+                }
+            },
+            'github': {
+                description: 'Abre meu perfil no Github em uma nova aba.',
+                execute: () => {
+                    window.open('https://github.com/seu-usuario', '_blank');
+                    return '\n>> Abrindo Github em nova aba...\n';
+                }
+            },
+            'clear': {
+                description: 'Limpa a tela do console.',
+                execute: () => {
+                    terminalOutput.innerHTML = '';
+                    return '';
+                }
+            },
+            'ls': {
+                description: 'Lista os principais diretórios (seções do site).',
+                execute: () => {
+                    return `\n<span style="color: ${accentColor};">/home</span> <span style="color: ${accentColor};">/about</span> <span style="color: ${accentColor};">/portfolio</span> <span style="color: ${accentColor};">/terminal</span>\n`;
+                }
+            },
+            'theme': {
+                description: 'Alterna entre o tema claro e escuro.',
+                execute: () => {
+                    toggleTheme();
+                    return '\n>> Tema alternado com sucesso!\n';
+                }
+            }
+        };
+
+        function printToTerminal(text, isCommand = false) {
+            const prompt = `<span style="color: ${terminalGreen};">$</span> `;
+
+            if (isCommand) {
+                // Adiciona o comando digitado com o prompt
+                terminalOutput.innerHTML += `<span class="text-white">${prompt} ${text}</span>\n`;
+            } else {
+                // Adiciona a resposta formatada
+                terminalOutput.innerHTML += text + '\n';
+            }
+
+            // Rola para o final
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        function executeCommand(input) {
+            const parts = input.trim().toLowerCase().split(/\s+/);
+            const command = parts[0];
+            const args = parts.slice(1);
+
+            if (commands[command]) {
+                const result = commands[command].execute(args);
+                if (result) {
+                     printToTerminal(result);
+                }
+            } else {
+                printToTerminal(`\n<span class="text-red-500">ERRO:</span> Comando não encontrado: ${command}. Digite 'help' ou 'theme' para ver os comandos.`);
+            }
+        }
+
+        function handleInput(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Previne nova linha no input
+                const input = terminalInput.value.trim();
+
+                if (input === '') {
+                    printToTerminal(''); // Apenas printa o prompt vazio
+                    return;
+                }
+
+                // 1. Printa o comando digitado e executa
+                printToTerminal(input, true);
+                executeCommand(input);
+
+                // 2. Adiciona ao histórico e limpa o input
+                history.unshift(input);
+                historyIndex = -1;
+                terminalInput.value = '';
+
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (history.length > 0 && historyIndex < history.length - 1) {
+                    historyIndex++;
+                    terminalInput.value = history[historyIndex];
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = history[historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    terminalInput.value = '';
+                }
+            }
+        }
+
+        // Mensagem inicial de boas-vindas ao carregar
+        setTimeout(() => {
+            executeCommand('help');
+        }, 500);
+
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Ciência da Computação | Vintage Sci-Fi Terminal</title>
     <!-- Carrega Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -503,7 +1068,7 @@ Transparent frame
         <!-- FOOTER: Contato Rápido e Status -->
         <footer class="mt-8 border-t-2 border-[#00FFFF] pt-4 text-sm">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <p>&copy; 2024 TERMINAL. Todos os direitos reservados. :: NODE ESTÁVEL</p>
+                <p>&copy; 2025 TERMINAL. Todos os direitos reservados. :: NODE ESTÁVEL</p>
                 <div class="flex space-x-4 mt-2 md:mt-0">
                     <a href="#" id="nav-footer-github" class="hover:underline">GITHUB</a>
                     <span class="text-[#00FFFF]">|</span>
